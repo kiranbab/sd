@@ -81,3 +81,16 @@ class VAE_Encoder(nn.Sequential):
         
         # we are removing the log by rasiing it to exponential, this doesn;t alter the shape
         variance = log_variance.exp()
+        
+        # we find the standard deviation by rooting the variance
+        stddev=variance.sqrt()
+        
+        # we are sampling with the same mean around the same std. deviation
+        x=mean+stddev*noise
+        
+        
+        # scale the output by a constant
+        # the constant is determined based on the original stable diffusion model
+        x *= 0.18215
+        
+        return x
