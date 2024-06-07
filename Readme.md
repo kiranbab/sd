@@ -1,7 +1,7 @@
 # stable diffusion 
 
 
-we are creating joint distribution model. stable difrfusion is latent diffusion model. we dont learn the distubtion p(x) of our dataset of images, rather the distirbution of latent represenetation of data using *Vartional autoencoder*
+we are creating joint distribution model. stable difrfusion is latent diffusion model. we dont learn the distubtion p(x) of our dataset of images, rather the distirbution of latent represenetation of data using *Vartional autoencoder* 
 
 ### forward process of sd 
 The idea in forward process is given a input image we need to create a noisified version of image in each timestep using standard deviation(which adds Noise). 
@@ -10,9 +10,13 @@ The idea in forward process is given a input image we need to create a noisified
 
 ![alt text](image-2.png)
 
+
+![alt text](image-2.png)
+
 what distingushes diffusion models from other types of latent variable models is the approximate posterior called forward process or diffusion process, is fixed to markov chain that gradually adds Gaussian Noise according to variance schedule, $\beta_0$,$\beta_1$,...	
 
 
+###  reverse process of sd 
 ###  reverse process of sd 
 
 in reverse process, we try to denoise the image given an noisy image. we try to marganlize better weith Evidence Lower Bound(**ELBO**) 
@@ -36,4 +40,9 @@ contrastive Language Image Pre-training(**CLIP**)
 
 we use clip encoder to convert textual prompts to embeddings. we train model to have higher value only along diagonal and lesser value in other cells. Each image is associated with the corresponding textual prompt this way T1 -> I1, T2->I2. we take this textual embeddings and use as conditional embedding in our U-Net model  
 
-rather than a high quality images like 512*512 image we compress the image using Varational Auto-Encoder to approx. 64\*64 using VAE . 
+rather than a high quality images like 512*512 image we compress the image using Varational Auto-Encoder to approx. 64\*64 using VAE . The VAE learns the latent space, the latent space represent the parameter($\mu(mean), \sigma$(std.dev)	) of multi-variate distribution 
+|![alt text](image-3.png)|
+|:--:| 
+|architecture of stable diffusion|
+
+we can use the same architecture for image to iamge architecture, replacing the noise image with our image 
