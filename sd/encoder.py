@@ -67,3 +67,25 @@ class VAE_Encoder(nn.Sequential):
                 x=F.pad(x,(0,1,0,1))
             x=module(x)
             
+        # torch.chunk is used to split the entire matrix into n part along the dim (in our case, its splits into 2 part along dim=1)
+        # (batchsize,8,height/8,width/8) -> two tensors of shape(batchsize,4,height/8,width/8)
+        mean,log_variance = torch.chunk(x,2,dim=1)
+        
+        # inorder to avoid the value from  becomign too small we clamp it
+        # (batchsize,4,height/8,width/8) -> (batchsize,4,height/8,width/8
+        log_variance = torch.clamp(log_variance,-30,20)
+        
+        # (batchsize,4,height/8,width/8) -> (batchsize,4,height/8,width/8
+        variance = log_variance.exp()
+        
+        # (batchsize,4,height/8,width/8) -> (batchsize,4,height/8,width/8
+        stdev= variance.sqrt()
+        
+        # z= N(0,1) -> N(mean,stdev) = X ?
+        # x=mean+stdev*Z
+        x=mean +stdev * noise
+        
+        # scale output by constant
+        x*=0.18215
+        
+        return x 
