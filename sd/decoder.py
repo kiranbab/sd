@@ -1,7 +1,7 @@
 import torch 
 from torch import nn 
 from torch.nn import Sequential as F 
-from attention import SelfAttention
+from sd.sd.attention import SelfAttention
 
 class VAE_AttentionBlock(nn.Module):
     
