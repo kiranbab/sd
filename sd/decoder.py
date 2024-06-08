@@ -88,7 +88,52 @@ class VAE_Decoder(nn.Sequential):
             # (batchsize,512,height/8,width/8) -> (batchsize,512,height/8,width/8)
             VAE_ResidualBlock(512,512),
             
+            # (batchsize,512,height/8,width/8) -> (batchsize,512,height/4,width/4)
             nn.Upsample(scale_factor=2),
             
+            nn.Conv2d(512,512,kernel_size=3,padding=1),
+            
+            VAE_ResidualBlock(512,512),
+            VAE_ResidualBlock(512,512),
+            VAE_ResidualBlock(512,512),
+            
+            # (batchsize,512,height/4,width/4) -> (batchsize,512,height/2,width/2)
+            nn.Upsample(scale_factor=2),
+            
+            nn.Conv2d(512,512,kernel_size=3,padding=1),
+            
+            VAE_ResidualBlock(512,256),
+            VAE_ResidualBlock(256,256),
+            VAE_ResidualBlock(256,256),
+            
+            # (batchsize,256,height/2,width/2) -> (batchsize,256,height,width)
+            nn.Upsample(scale_factor=2),
+            
+            nn.Conv2d(256,256,kernel_size=3,padding=1),
+            
+            VAE_ResidualBlock(256,128),
+            VAE_ResidualBlock(128,128),
+            VAE_ResidualBlock(128,128),
+            
+            nn.GroupNorm(32,128),
+            
+            nn.SiLU(),
+            
+            # (batchsize,256,height,width) -> (batchsize,3,height,width)
+            nn.Conv2d(128,3,kernel_size=3,padding=1)
         )
+        
+    def forward(self, x:torch.Tensor)-> torch.Tensor:
+        # x:(batch_size,4,height/8,width/8)
+        
+        # in encoder we multiplied the cosnstant for scaling purpose 
+        x/=0.18215
+        
+        for module in self:
+            x= module(x)
+        
+        # (batch_size,3,height,width)
+        return x 
+        
+        
          
